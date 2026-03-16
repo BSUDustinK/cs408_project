@@ -1,6 +1,6 @@
 # Full Stack Web Application Starter
 
-This is a starter template for a full stack web application built with Node.js,
+This is a modified full stack web application built with a provided template using Node.js,
 Express, and SQLite. It is fully containerized using Docker, making it easy to
 deploy to various environments, including AWS EC2 instances.
 
