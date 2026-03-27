@@ -1,13 +1,35 @@
+:root {
+  --primary-color: blanchedalmond;
+  --secondary-color: burlywood;
+  --primary-fill: maroon;
+  --default-backdrop-color: darkslategrey;
+  --main-padding: 10px;
+}
+
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--default-backdrop-color);
   min-height: 100vh;
   padding: 20px 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+p{
+  color:maroon;
 }
+
+.character-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--secondary-color);
+
+}
+
+
+
+
+
+
+
+
 
 .card {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

@@ -25,7 +25,10 @@ class name {
         this.notes = [];
 
         this.inventory = []; 
+        this.challengeRating = 0; // factor * 1/16
 
+
+        // 0, 1, 2, 3 is a multiplier for proficiency, for expertise or beyond
         this.skillModifiers = {
             // Strength-based skills
             athletics: 0,
