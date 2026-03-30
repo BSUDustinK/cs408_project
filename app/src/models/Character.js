@@ -81,5 +81,10 @@ class name {
     statMod(statValue){
         return Math.floor((statValue - 10) / 2);
     }
+
+
+
+
+    
     
 }

@@ -4,18 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player View</title>
-    <script src="/javascripts/myscript.js"></script>
-    <link href="/stylesheets/lab0.css" rel="stylesheet"> <!--Set up custom CSS for players to alter in future after semester-->
+    <script src="/javascripts/playerCharacterLoader.js"></script>
+    <link href="/stylesheets/style.css" rel="stylesheet"> <!--Set up custom CSS for players to alter in future after semester-->
+    <div class="toolbar">
+        <button class="tool-button" onclick="alert('CreateCharacter')">Create New Character</button>
+        <button class="tool-button" onclick="alert('LoadCharacter')">Load</button>
+        <button class="tool-button" onclick="alert('SaveCharacter')">Save</button>
+    </div>
 </head>
 <body>
-    <h1>Faux's Combat Tracker!</h1>
-    <p>This is will be you're character stats in the near future!</p>
-    <!-- <img src="/images/dependency_2x.png" alt="Fullstack Dependency" style="max-width: 200px;"> -->
-    <!-- <p>
-        <strong>Click the button to see a message from JavaScript:</strong>
-        <button class="btn btn-primary mt-3" onclick="showHelloWorld()">Click Me</button>
-    </p> -->
+    
+
+    <div class="character-card-player-view"> <!--Add a hide feature until a character is loaded-->
+        <p class="card-name">{{NAME}}</p> 
+        <div class="hp-ac-bar">
+            <button class="HP-button" onclick="alert('modifyHP')">HP: {{CurrentHP}} / {{MaxHP}}</button>
+            <button class="AC-button" onclick="alert('modifyAC')">AC: {{AC}}</button>
+            <button class="Initiatave-button" onclick="alert('rollInitiativePrompt')">{{INITIATIVE}}</button>
+        </div>
+        <table class="stat-table">
+            <thead>
+                <tr>
+                    <th>STR</th>
+                    <th>DEX</th>
+                    <th>CON</th>
+                    <th>INT</th>
+                    <th>WIS</th>
+                    <th>CHA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><button onclick="alert('Do a STR check')"> {{STR}} </button></td>
+                    <td><button onclick="alert('Do a DEX check')"> {{DEX}} </button></td>
+                    <td><button onclick="alert('Do a CON check')"> {{CON}} </button></td>
+                    <td><button onclick="alert('Do a INT check')"> {{INT}} </button></td>
+                    <td><button onclick="alert('Do a WIS check')"> {{WIS}} </button></td>
+                    <td><button onclick="alert('Do a CHA check')"> {{CHA}} </button></td>
+                </tr>
+            </tbody>
+        </table>
+        
 
 
+    </div>
 </body>
 </html>
