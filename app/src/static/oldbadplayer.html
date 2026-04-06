@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player View</title>
+    
+    <link href="/stylesheets/style.css" rel="stylesheet"> <!--Set up custom CSS for players to alter in future after semester-->
+
+    <script src="/javascripts/playerCharacterLoader.js"></script>
+    <script>
+        let character = null;
+        function downloadCharacter(){
+            downloadItem(JSON.stringify(character));
+        }
+        function loadCharacter(){
+
+
+
+            
+            if(!(incomingCharacter instanceof Character)){
+                alert("Character is invalid, check that the proper format is used."); 
+            return;
+            }
+            character = incomingCharacter;
+        }
+    </script>
+
+    <div class="toolbar">
+        <button class="tool-button" onclick="alert('CreateCharacter')">Create New Character</button>
+
+        <button class="tool-button" onclick="document.getElementById('char-upload').click()">Load Character</button>
+        <button class="tool-button" onclick="alert('${downloadCharacter()}')">Download Character</button>
+        
+        <input type="file" id="char-upload" accept=".json" style="display:none"> <!--Uploaded Content-->
+    </div>
+</head>
+<body>
+    
+
+    <!--        CHARACTER CARD          -->
+    <div class="character-card-player-view"> <!--Add a hide feature until a character is loaded-->
+        <p class="card-name">{{NAME}}</p> 
+        <div class="hp-ac-bar">
+            <button class="HP-button" onclick="alert('modifyHP')">HP: {{CurrentHP}} / {{MaxHP}}</button>
+            <button class="AC-button" onclick="alert('modifyAC')">AC: {{AC}}</button>
+            <button class="Initiatave-button" onclick="alert('rollInitiativePrompt')">{{INITIATIVE}}</button>
+        </div>
+        <table class="stat-table">
+            <thead>
+                <tr>
+                    <th>STR</th>
+                    <th>DEX</th>
+                    <th>CON</th>
+                    <th>INT</th>
+                    <th>WIS</th>
+                    <th>CHA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><button onclick="alert('Do a STR check')"> {{STR}} </button></td>
+                    <td><button onclick="alert('Do a DEX check')"> {{DEX}} </button></td>
+                    <td><button onclick="alert('Do a CON check')"> {{CON}} </button></td>
+                    <td><button onclick="alert('Do a INT check')"> {{INT}} </button></td>
+                    <td><button onclick="alert('Do a WIS check')"> {{WIS}} </button></td>
+                    <td><button onclick="alert('Do a CHA check')"> {{CHA}} </button></td>
+                </tr>
+            </tbody>
+        </table>
+        
+
+
+    </div>
+</body>
+</html>

@@ -58,6 +58,19 @@ class name {
     }
 
 
+    //Download
+    downloadItem() {
+    const blob = new Blob([JSON.stringify(item, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${item.name.replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    }
+
     //abilities[] = {name, description}, {name, description}
     addAbility(abilityName, abilityDescription){
         this.abilities.push({abilityName, abilityDescription})

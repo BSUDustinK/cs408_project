@@ -3,50 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player View</title>
-    <script src="/javascripts/playerCharacterLoader.js"></script>
-    <link href="/stylesheets/style.css" rel="stylesheet"> <!--Set up custom CSS for players to alter in future after semester-->
-    <div class="toolbar">
-        <button class="tool-button" onclick="alert('CreateCharacter')">Create New Character</button>
-        <button class="tool-button" onclick="alert('LoadCharacter')">Load</button>
-        <button class="tool-button" onclick="alert('SaveCharacter')">Save</button>
-    </div>
+    <title>D&D Character Tracker</title>
+    <link rel="stylesheet" href="/stylesheets/cardstyle.css">
+    
 </head>
 <body>
+    <nav class="toolbar">
+        <input type="file" id="char-upload" accept=".json" style="display:none"> <!--Uploaded Content-->
+
+        <button class="tool-button btn-create-char">Create Character</button>
+        <button class="tool-button btn-load-char">Load Character</button>
+        <button class="tool-button btn-export-char">Save Character</button>
+        <!-- <button class="tool-button btn-clear-char">Reset</button> -->
+    </nav>
     
+    <!-- Main Character Card -->
+    <div id="character-app"></div>
 
-    <div class="character-card-player-view"> <!--Add a hide feature until a character is loaded-->
-        <p class="card-name">{{NAME}}</p> 
-        <div class="hp-ac-bar">
-            <button class="HP-button" onclick="alert('modifyHP')">HP: {{CurrentHP}} / {{MaxHP}}</button>
-            <button class="AC-button" onclick="alert('modifyAC')">AC: {{AC}}</button>
-            <button class="Initiatave-button" onclick="alert('rollInitiativePrompt')">{{INITIATIVE}}</button>
+    <!-- Modular Popup Interface -->
+    <div id="modal-overlay" class="hidden">
+        <div class="modal-content">
+            <h3 id="modal-title">Edit</h3>
+            
+            <div id="simple-input-group">
+                <input type="text" id="modal-input">
+            </div>
+
+            <div id="note-input-group" class="hidden">
+                <textarea id="note-textarea" placeholder="Type your note here..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button id="modal-save-btn" class="btn-save">Save</button>
+            </div>
         </div>
-        <table class="stat-table">
-            <thead>
-                <tr>
-                    <th>STR</th>
-                    <th>DEX</th>
-                    <th>CON</th>
-                    <th>INT</th>
-                    <th>WIS</th>
-                    <th>CHA</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><button onclick="alert('Do a STR check')"> {{STR}} </button></td>
-                    <td><button onclick="alert('Do a DEX check')"> {{DEX}} </button></td>
-                    <td><button onclick="alert('Do a CON check')"> {{CON}} </button></td>
-                    <td><button onclick="alert('Do a INT check')"> {{INT}} </button></td>
-                    <td><button onclick="alert('Do a WIS check')"> {{WIS}} </button></td>
-                    <td><button onclick="alert('Do a CHA check')"> {{CHA}} </button></td>
-                </tr>
-            </tbody>
-        </table>
-        
-
-
     </div>
+
+    <script src="/javascripts/characterloader.js"></script>
 </body>
 </html>

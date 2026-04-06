@@ -6,6 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Testing whiteboard area
+WHITEBOARD/
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -106,10 +109,11 @@ dist
 
 # MacOS stupid stuff
 .DS_Store
-# Ingore pem files AWS uses for SSH
+# Ignore pem files AWS uses for SSH
 *.pem
 
 data/
+
 
 # Playwright Test Results
 test-results/
