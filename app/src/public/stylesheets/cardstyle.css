@@ -188,3 +188,40 @@ body {
 #modal-input, #note-textarea { width: 100%; padding: 8px; margin: 10px 0; box-sizing: border-box; }
 #note-textarea { height: 100px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+
+.toggle-button {
+    background-color: rgb(255, 255, 255);
+    border-color: var(--primary-fill);
+    border-radius: 9px;
+    min-width: 18px; 
+    min-height: 18px; 
+    max-width: 18px; 
+    max-height: 18px; 
+    padding: 0;
+}
+.toggle-button.active {
+    background-color: var(--primary-fill);
+    border-color: var(--primary-fill);
+    border-radius: 9px;
+    min-width: 18px; 
+    min-height: 18px; 
+    max-width: 18px; 
+    max-height: 18px; 
+    padding: 0;
+}
+
+.stat-table{
+    table-layout: fixed;
+    width: 100%;
+}
+.stat-table tr td:nth-child(3) input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.stat-table tr td:nth-child(2) > *{
+    display: block;
+    margin: 0 auto;
+}
+
