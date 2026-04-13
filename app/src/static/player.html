@@ -100,15 +100,25 @@
             </div>
 
             <div id="ability-input-group" class="hidden">
-                <input type="text" id="ability-name-input" >
-                <textarea id="ability-description-textarea" placeholder="Type your ability here..."></textarea>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td><input type="text" id="ability-name-input" ></td>
+                    </tr>
+                </table>
+                <textarea id="ability-description-textarea" resize="none" style="width: 100%; height: 112pt" placeholder="Type your ability here..."></textarea>
+                
+                <button id="ability-toggle-button" class="toggle-button" onclick="toggleAbility()"></button>
+                <label id="ability-toggle-label">Ability</label>
             </div>
 
+            <!-- Important buttons -->
             <div class="modal-actions">
                 <button id="btn-cancel" class="btn-cancel" onclick="closeModal()">Cancel</button>
                 <button id="modal-save-btn" class="btn-save">Save</button>
             </div>
         </div>
+
     </div>
 
     <script src="/javascripts/characterloader.js"></script>

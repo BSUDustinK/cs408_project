@@ -83,7 +83,15 @@ class Character {
             this.save();
         }
     }
-}
+    addAbility(ability) {
+        this.abilities.push(ability);
+        this.save();
+    }
+    addAction(action) {
+        this.actions.push(action);
+        this.save();
+    }
+} 
 
 let myChar = new Character();
 window.myChar = myChar;
@@ -95,15 +103,13 @@ function render() {
         <div class="character-card">
             <div class="card-name">${myChar.myname}</div>
             
-            <div class="stats-header">
-            <div class="hp-row">
-                    <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${myChar.hp.current}</button>
-                </div>
-                <div class="name-row">
-                    <button onclick="openModal('AC', 'ac')">AC: ${myChar.ac}</button>
-                </div>
+                <div class="stats-header">
+                    <div class="hp-row">
+                        <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${myChar.hp.current}</button>
+                        <button onclick="openModal('AC', 'ac')">AC: ${myChar.ac}</button>
+                    </div>
                 
-            </div>
+                </div>
 
             <div class="ability-grid">
                 ${Object.keys(myChar.stats).map(s => `
@@ -114,6 +120,7 @@ function render() {
             </div>
 
             <div class="actions-bar">
+                <button class="btn-add" onclick="openModal('Add Ability', 'ability')">Add Ability</button>
                 <button class="btn-add" onclick="openModal('Add Note', 'note')">Add Note</button>
                 <div>
                     Act: <input type="checkbox"> 
@@ -122,19 +129,7 @@ function render() {
             </div>
 
             <div class="scroll-area">
-                <!-- Wrap Abilities/Actions in the list-item class -->
-                ${myChar.actions.map(a => `
-                    <div class="list-item action-item">
-                        <strong>${a.name}</strong><br>
-                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
-                    </div>
-                `).join('')}
-                ${myChar.abilities.map(a => `
-                    <div class="list-item ability-item">
-                        <strong>${a.name}</strong><br>
-                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
-                    </div>
-                `).join('')}
+                
 
                 <!-- Wrap Notes in the same list-item class -->
                 ${myChar.notes.map(n => `
@@ -142,11 +137,36 @@ function render() {
                         ${n}
                     </div>
                 `).join('')}
+
+                <!-- Wrap Actions in the list-item class -->
+                ${myChar.actions.map(a => `
+                    <div class="list-item action-item">
+                        <strong>${a.name}</strong><br>
+                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
+                    </div>
+                `).join('')}
+
+                <!-- Wrap Abilities in the list-item class -->
+                ${myChar.abilities.map(a => `
+                    <div class="list-item ability-item">
+                        <strong>${a.name}</strong><br>
+                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
+                    </div>
+                `).join('')}
+
             </div>
         </div>
     `;
 }
+// ##########################   MODAL Components     ####################################
 
+// Toggles Ability and Action
+const abilityToggle = document.getElementById('ability-toggle-button'); 
+const abilityToggleText = document.getElementById('ability-toggle-label'); 
+function toggleAbility(){
+    abilityToggle.classList.toggle('ability');
+    abilityToggleText.innerHTML = abilityToggleText.innerHTML === 'Ability'? 'Action':'Ability'; //Toggles the Label's text between Action or Ability
+}
 
 // ##########################    MODAL Functionality     ####################################
 
@@ -192,7 +212,7 @@ function openModal(title, key) {
 
         const descriptionInput = document.getElementById('ability-description-textarea');
         descriptionInput.defaultValue = "Enter the description";
-       
+
         //Future implementation !required ?optional
         /** 
          * Action
@@ -204,11 +224,22 @@ function openModal(title, key) {
          */
         
         saveBtn.onclick = () => { 
-            newAction = {
-                name: nameInput.value, 
-                description: descriptionInput.value
+            if(abilityToggleText.innerHTML === 'Ability'){
+                newAbility = {
+                    name: nameInput.value, 
+                    desc: descriptionInput.value
+                }
+                 myChar.addAbility(newAbility); 
+
+            }else{
+                newAction = {
+                    name: nameInput.value, 
+                    desc: descriptionInput.value
+                }
+                myChar.addAction(newAction); 
             }
-            myChar.addAction(newAction); 
+            
+           
             closeModal(); 
         };
       
@@ -287,8 +318,10 @@ function closeModal() {
     document.getElementById('modal-overlay').classList.add('hidden');
 }
 
+// ########################## Tests for and displays last session data ####################################
 const testSave = JSON.parse(localStorage.getItem('dnd_char_data'));
 if(testSave){render();}
+
 
 
 
