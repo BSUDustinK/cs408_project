@@ -1,4 +1,13 @@
-
+/**
+ * The main class for the program to utilize across each page to display character cards. 
+ * 
+ *  Internal Data:
+ *      Name
+ *      Character Lvl
+ *      HP{ Max, Current ,Temp }
+ *      AC
+ *      STATS{ STR, DEX, CON, INT, WIS, CHA }
+ */
 class Character {
     /**
      * 
@@ -39,7 +48,7 @@ class Character {
 
     save() {
         localStorage.setItem('dnd_char_data', JSON.stringify(this));
-        if (typeof render === 'function') render();
+        this.render();
     }
 
     exportToFile() {
@@ -48,7 +57,7 @@ class Character {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${this.myname.replace(/\s+/g, '_')}_sheet.json`;
+        link.download = `${this.myname.replace(/\s+/g, '_')}_${new Date().toLocaleDateString().replace(/\s+/g, '_')}.json`;
         link.click();
         URL.revokeObjectURL(url);
     }
@@ -98,7 +107,7 @@ class Character {
                 <div class="stats-header">
                     <div class="hp-row">
                         <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${this.hp.current}</button>
-                        <button onclick="openModal('AC', 'ac')">AC: ${this.ac}</button>
+                        <button class="ac-button" onclick="openModal('AC', 'ac')">AC: ${this.ac}</button>
                     </div>
                 
                 </div>
@@ -317,7 +326,7 @@ function openModal(title, key) {
         simpleGroup.classList.remove('hidden');
         const input = document.getElementById('modal-input');
         input.value = myChar.stats[key] || myChar[key];
-        saveBtn.onclick = () => { myChar.updateField(key, input.value); closeModal(); };
+        saveBtn.onclick = () => { myChar.updateField(key, input.value); closeModal();};
     }
 }
 
