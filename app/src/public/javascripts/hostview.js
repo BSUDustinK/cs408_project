@@ -15,7 +15,7 @@ class Character {
      *      For the player view this will be dnd_char_data as provided by default value. However the Host view will save
      *      a list of names to its variables. each 
      */
-    constructor(characterFileName = 'dnd_char_data') {
+    constructor(characterFileName = 'new_character', characterId = 0) {
         this.loadFromLocalStorage(characterFileName);
     }
 
@@ -25,6 +25,7 @@ class Character {
             this.applyData(saved || {});
         } catch{
             alert("Local file may be corrupted")
+            this.applyData({});
         }
         
     }
@@ -32,6 +33,8 @@ class Character {
     // Applies updates to the character with the json information
     applyData(data) {
         this.myname = data.myname || " ";
+        this.characterId = data.characterId || 0;
+
         this.chaLvl = data.chaLvl || 1;
         this.ac = data.ac || 10;
         this.hp = data.hp || { max: 10, current: 10, tmp: 0 };
@@ -42,6 +45,10 @@ class Character {
         this.abilities = data.abilities || [];
         this.actions = data.actions || []; 
     }
+    changeID(characterId){
+        this.characterId = characterId;
+    }
+
     clearData(){
         this.applyData({});
     }
@@ -99,30 +106,31 @@ class Character {
     }
 
     render(characterId = 'character-app') {
-    const root = document.getElementById(characterId);
-    root.innerHTML = `
+        const root = document.getElementById(characterId);
+        root.innerHTML = `
         <div class="character-card">
             <div class="card-name">${this.myname}</div>
             
                 <div class="stats-header">
                     <div class="hp-row">
-                        <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${this.hp.current}</button>
-                        <button onclick="openModal('AC', 'ac')">AC: ${this.ac}</button>
+                        <button class="hp-button" onclick="openModal('HP', 'hp', ${this.characterId})">HP: ${this.hp.current}</button>
+                        <button class="ac-button" onclick="openModal('AC', 'ac', ${this.characterId})">AC: ${this.ac}</button>
+                        <button class="erase-button" onclick="deleteButton(${this.characterId})">X</button>
                     </div>
                 
                 </div>
 
             <div class="ability-grid">
                 ${Object.keys(this.stats).map(s => `
-                    <button onclick="openModal('${s}', '${s}')">
+                    <button onclick="openModal('${s}', '${s}', ${this.characterId})">
                         ${s} <span>${this.stats[s]}</span>
                     </button>
                 `).join('')}
             </div>
 
             <div class="actions-bar">
-                <button class="btn-add" onclick="openModal('Add Ability', 'ability')">Add Ability</button>
-                <button class="btn-add" onclick="openModal('Add Note', 'note')">Add Note</button>
+                <button class="btn-add" onclick="openModal('Add Ability', 'ability', ${this.characterId})">Add Ability</button>
+                <button class="btn-add" onclick="openModal('Add Note', 'note', ${this.characterId})">Add Note</button>
                 <div>
                     Act: <input type="checkbox"> 
                     BA: <input type="checkbox">
@@ -160,7 +168,7 @@ class Character {
         </div>
     `;
     }
-}
+} 
 class Encounter {
     constructor(fileToLoad = 'last_encounter_data'){
         this.loadFromLocalStorage(fileToLoad);
@@ -215,9 +223,9 @@ class Encounter {
         URL.revokeObjectURL(url);
     }
 
-    resetCharacter() {
+    reset() {
         if (confirm("Are you sure you want to delete this character?")) {
-            localStorage.removeItem('dnd_char_data');
+            localStorage.removeItem('last_encounter_data');
             location.reload();
         }
     }
@@ -226,11 +234,22 @@ class Encounter {
         const root = document.getElementById('tracker-view');
         this.clearWindow();
         this.characters.forEach(character => {
+            const targetContainer = `character-${character.id}`;
             root.innerHTML += `
-                <div class="character-card" id="character-${character.id}">  </div>
-            `;});
+                <div id="character-${character.id}">  </div>
+            `;
+            character.render(targetContainer);
+        });
     }
 
+    addCharacter(newCharacter){
+        if(this.characters){
+            this.characters.push(newCharacter);
+        } else {
+            this.characters = [newCharacter]
+        }
+        this.render();
+    }
 
     //Character fields 
     updateField(key, value) {
@@ -265,7 +284,7 @@ window.activeEncounter = activeEncounter;
 const testSave = JSON.parse(localStorage.getItem('last_encounter_data'));
 if(testSave){ activeEncounter.render(); } 
 
-
+ 
 // ########################## TOOLBAR & Button Functionality for Host View ####################################
 
 //Important Window functionalities
@@ -289,18 +308,11 @@ function verifyOverwrite(){
 }
 
 document.querySelector(".btn-load-char")?.addEventListener("click", () => {
-    if (verifyOverwrite()) {
-        document.getElementById('char-upload').click();
-    }
+    document.getElementById('char-upload').click();
 });
 
 document.querySelector(".btn-create-char")?.addEventListener("click", () => {
-    if(verifyOverwrite()){
-        localStorage.removeItem('dnd_char_data');
-        myChar.clearData();
-        openModal('New Character', 'create');
-        myChar.render();
-    } 
+    openModal('New Character', 'create');
 });
 
 document.getElementById('char-upload').addEventListener('change', function(e) {
@@ -331,3 +343,168 @@ document.getElementById('char-upload').addEventListener('change', function(e) {
 document.querySelector(".btn-export-char")?.addEventListener("click", () => {
     myChar.exportToFile();
 });
+
+// ##########################   MODAL Components     ####################################
+
+// Toggles Ability and Action
+const abilityToggle = document.getElementById('ability-toggle-button'); 
+const abilityToggleText = document.getElementById('ability-toggle-label'); 
+function toggleAbility(){
+    abilityToggle.classList.toggle('ability');
+    abilityToggleText.innerHTML = abilityToggleText.innerHTML === 'Ability'? 'Action':'Ability'; //Toggles the Label's text between Action or Ability
+}
+
+// ##########################    MODAL Functionality     ####################################
+
+function openModal(title, key, target="") {
+    const overlay = document.getElementById('modal-overlay'); //Main container
+    
+    //Change Data
+    const noteGroup = document.getElementById('note-input-group');
+    const simpleGroup = document.getElementById('simple-input-group');
+    const hpGroup = document.getElementById('hp-input-group');
+
+    // Complex Creation boxes
+    const createEditGroup = document.getElementById('create-edit-group');
+    const abilityGroup = document.getElementById('ability-input-group');
+
+    //Toggle each mode off to ensure proper display
+    noteGroup.classList.add('hidden');
+    simpleGroup.classList.add('hidden');
+    createEditGroup.classList.add('hidden');
+    hpGroup.classList.add('hidden');
+    abilityGroup.classList.add('hidden');
+
+
+    const saveBtn = document.getElementById('modal-save-btn'); 
+    const cancelBtn = document.getElementById('modal-btn-cancel');
+
+    if(target){
+        const targetCharacter = document.getElementById(`character-${target.characterId}`);
+    }
+    
+
+    //Display Modal Menu
+    document.getElementById('modal-title').innerText = title;
+    overlay.classList.remove('hidden');
+
+    //Add Modal input functions based on implementation
+    if (key === 'note') {
+        noteGroup.classList.remove('hidden');
+        const area = document.getElementById('note-textarea');
+        area.value = "";
+        saveBtn.onclick = () => { myChar.addNote(area.value); closeModal(); };
+
+    } else if (key === 'ability') {
+        abilityGroup.classList.remove('hidden');
+
+        const nameInput = document.getElementById('ability-name-input');
+        nameInput.defaultValue = myChar.hp.current;
+
+        const descriptionInput = document.getElementById('ability-description-textarea');
+        descriptionInput.defaultValue = "Enter the description";
+
+        //Future implementation !required ?optional
+        /** 
+         * Action
+         *  ! Name: String
+         *  ! Description: String (Should include a full description of the ability and any save DC effects) 
+         *  ? Cost: 'action', 'bonus-action', 'reaction', 'legendary-action', 'free-action'
+         *  ? Roll: SkillCheck (Use skill list, attack mods, or save checks)
+         *  ? Damage: { DamageDie , Quantity, Mod }
+         */
+        
+        saveBtn.onclick = () => { 
+            if(abilityToggleText.innerHTML === 'Ability'){
+                newAbility = {
+                    name: nameInput.value, 
+                    desc: descriptionInput.value
+                }
+                 myChar.addAbility(newAbility); 
+
+            }else{
+                newAction = {
+                    name: nameInput.value, 
+                    desc: descriptionInput.value
+                }
+                myChar.addAction(newAction); 
+            }
+            
+           
+            closeModal(); 
+        };
+      
+    } else if (key === 'hp') {
+        hpGroup.classList.remove('hidden');
+        const tmpHpInput = document.getElementById('tmp-hp-input');
+        tmpHpInput.defaultValue = myChar.hp.tmp;
+
+        const currentHpInput = document.getElementById('current-hp-input');
+        currentHpInput.defaultValue = myChar.hp.current;
+
+        const maxHpInput = document.getElementById('max-hp-input');
+        maxHpInput.defaultValue = myChar.hp.max;
+
+        saveBtn.onclick = () => { 
+            newHP = { max: maxHpInput.value, current: currentHpInput.value, tem: tmpHpInput.value }
+            myChar.updateField("hp", newHP); 
+            closeModal(); 
+        };
+
+    }else if (key === 'create') {
+        newCharacter = new Character();
+        activeEncounter.addCharacter(newCharacter);
+        const targetCharacter = document.getElementById(`character-${newCharacter.characterId}`);
+        targetCharacter.classList.add('hidden');
+        createEditGroup.classList.remove('hidden');
+
+        const nameInput = document.getElementById('name-input');
+        nameInput.placeholder = "Enter name here";
+        const lvlInput = document.getElementById('lvl-input');
+        lvlInput.placeholder = "1";
+        const hpInput = document.getElementById('hp-input');
+        hpInput.placeholder = "10";
+        const acInput = document.getElementById('ac-input');
+        acInput.placeholder = "10";
+
+        const strInput = document.getElementById('str-input');
+        strInput.placeholder = "10";
+        const dexInput = document.getElementById('dex-input');
+        dexInput.placeholder = "10";
+        const conInput = document.getElementById('con-input');
+        conInput.placeholder = "10";
+        const intInput = document.getElementById('int-input');
+        intInput.placeholder = "10";
+        const wisInput = document.getElementById('wis-input');
+        wisInput.placeholder = "10";
+        const chaInput = document.getElementById('cha-input');
+        chaInput.placeholder = "10";
+
+        saveBtn.onclick = () => { 
+            newChar = {
+                myname: nameInput.value,
+                chaLvl: lvlInput.value,
+                hp: { max: hpInput.value, current: hpInput.value, tmp: 0 },
+                ac: acInput.value,
+                stats: { STR: strInput.value, DEX: dexInput.value, CON: conInput.value, INT: intInput.value, WIS: wisInput.value, CHA: chaInput.value }//,
+
+                //notes: data.notes || [],
+                //abilities: data.abilities || [],
+                //actions:  data.actions || []
+            }
+            newCharacter.applyData(newChar);
+            newCharacter.save();
+            targetCharacter.classList.remove('hidden');
+            closeModal(); 
+        }; 
+    } else {
+        simpleGroup.classList.remove('hidden');
+        const input = document.getElementById('modal-input');
+        input.value = myChar.stats[key] || myChar[key];
+        saveBtn.onclick = () => { myChar.updateField(key, input.value); closeModal();};
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+}

@@ -32,6 +32,7 @@ class Character {
     // Applies updates to the character with the json information
     applyData(data) {
         this.myname = data.myname || " ";
+
         this.chaLvl = data.chaLvl || 1;
         this.ac = data.ac || 10;
         this.hp = data.hp || { max: 10, current: 10, tmp: 0 };
@@ -99,66 +100,70 @@ class Character {
     }
 
     render(characterId = 'character-app') {
-    const root = document.getElementById(characterId);
-    root.innerHTML = `
-        <div class="character-card">
-            <div class="card-name">${this.myname}</div>
-            
-                <div class="stats-header">
-                    <div class="hp-row">
-                        <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${this.hp.current}</button>
-                        <button class="ac-button" onclick="openModal('AC', 'ac')">AC: ${this.ac}</button>
+        const root = document.getElementById(characterId);
+        root.innerHTML = `
+            <div class="character-card">
+                <div class="card-name">${this.myname}</div>
+
+                    <div class="stats-header">
+                        <div class="hp-row">
+                            <button class="hp-button" onclick="openModal('HP', 'hp')">HP: ${this.hp.current}</button>
+                            <button class="ac-button" onclick="openModal('AC', 'ac')">AC: ${this.ac}</button>
+                        </div>
+
                     </div>
-                
+
+                <div class="ability-grid">
+                    ${Object.keys(this.stats).map(s => `
+                        <button onclick="openModal('${s}', '${s}')">
+                            ${s} <span>${this.stats[s]}</span>
+                        </button>
+                    `).join('')}
                 </div>
 
-            <div class="ability-grid">
-                ${Object.keys(this.stats).map(s => `
-                    <button onclick="openModal('${s}', '${s}')">
-                        ${s} <span>${this.stats[s]}</span>
-                    </button>
-                `).join('')}
-            </div>
+                <div class="actions-bar">
+                    <button class="btn-add" onclick="openModal('Add Ability', 'ability')">Add Ability</button>
+                    <button class="btn-add" onclick="openModal('Add Note', 'note')">Add Note</button>
+                    <div>
+                        Act: <input type="checkbox"> 
+                        BA: <input type="checkbox">
+                    </div>
+                </div>
 
-            <div class="actions-bar">
-                <button class="btn-add" onclick="openModal('Add Ability', 'ability')">Add Ability</button>
-                <button class="btn-add" onclick="openModal('Add Note', 'note')">Add Note</button>
-                <div>
-                    Act: <input type="checkbox"> 
-                    BA: <input type="checkbox">
+                <div class="scroll-area">
+                    
+
+                    <!-- Wrap Notes in the same list-item class -->
+                    ${this.notes.map(n => `
+                        <div class="list-item note-item">
+                            ${n}
+                            <button class="delete-button ${this.name}-delete-note" onclick="deleteNote(${n})">⨉</button>
+                        </div>
+                    `).join('')}
+
+                    <!-- Wrap Actions in the list-item class -->
+                    ${this.actions.map(a => `
+                        <div class="list-item action-item">
+                            <strong>${a.name}</strong><br>
+                            <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
+                        </div>
+                    `).join('')}
+
+                    <!-- Wrap Abilities in the list-item class -->
+                    ${this.abilities.map(a => `
+                        <div class="list-item ability-item">
+                            <strong>${a.name}</strong><br>
+                            <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
+                        </div>
+                    `).join('')}
+
                 </div>
             </div>
+        `;
+    }
 
-            <div class="scroll-area">
-                
-
-                <!-- Wrap Notes in the same list-item class -->
-                ${this.notes.map(n => `
-                    <div class="list-item note-item">
-                        ${n}
-                        <button class="delete-button ${this.name}-delete-note" onclick="deleteNote(${n})">⨉</button>
-                    </div>
-                `).join('')}
-
-                <!-- Wrap Actions in the list-item class -->
-                ${this.actions.map(a => `
-                    <div class="list-item action-item">
-                        <strong>${a.name}</strong><br>
-                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
-                    </div>
-                `).join('')}
-
-                <!-- Wrap Abilities in the list-item class -->
-                ${this.abilities.map(a => `
-                    <div class="list-item ability-item">
-                        <strong>${a.name}</strong><br>
-                        <span style="font-size: 0.9em; color: #444;">${a.desc}</span>
-                    </div>
-                `).join('')}
-
-            </div>
-        </div>
-    `;
+    changeID(characterId){
+        this.characterId = characterId;
     }
 } 
 

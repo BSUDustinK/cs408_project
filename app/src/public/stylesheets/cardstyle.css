@@ -143,6 +143,8 @@ body {
 }
 .btn-add { background: var(--primary-fill); color: white; border: none; padding: 5px 10px; border-radius: 4px; }
 
+.content-item { border-bottom: 1px solid #eee; padding: 0px 0; }
+
 /* Scroll Area */
 .scroll-area {
     height: 350px;
@@ -154,8 +156,6 @@ body {
     scrollbar-width: auto;          /* Options: auto, thin, none */
     scrollbar-color: var(--primary-fill) var(--secondary-color); /* thumb color | track color */
 }
-
-.content-item { border-bottom: 1px solid #eee; padding: 0px 0; }
 
 /* Chrome, Edge, and Safari Support */
 .scroll-area::-webkit-scrollbar {
