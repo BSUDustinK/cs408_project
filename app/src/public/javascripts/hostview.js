@@ -20,14 +20,8 @@ class Character {
     }
 
     loadFromLocalStorage(file) {
-        try{
-            const saved = JSON.parse(localStorage.getItem(file));
-            this.applyData(saved || {});
-        } catch{
-            alert("Local file may be corrupted")
-            this.applyData({});
-        }
-        
+        //Maybe File retrieval
+        this.applyData({});
     }
 
     // Applies updates to the character with the json information
@@ -54,8 +48,8 @@ class Character {
     }
 
     save() {
-        localStorage.setItem('dnd_char_data', JSON.stringify(this));
-        render();
+        //localStorage.setItem('dnd_char_data', JSON.stringify(this));
+        this.render();
     }
 
     exportToFile() {
@@ -105,21 +99,18 @@ class Character {
         this.save();
     }
 
-    render(characterId = 'character-app') {
-        const root = document.getElementById(characterId);
+    render(characterId = this.characterId || 'character-app') {
+        const root = document.getElementById(`character-${this.characterId}`);
         root.innerHTML = `
         <div class="character-card">
             <div class="card-name">${this.myname}</div>
-            
-                <div class="stats-header">
-                    <div class="hp-row">
-                        <button class="hp-button" onclick="openModal('HP', 'hp', ${this.characterId})">HP: ${this.hp.current}</button>
-                        <button class="ac-button" onclick="openModal('AC', 'ac', ${this.characterId})">AC: ${this.ac}</button>
-                        <button class="erase-button" onclick="deleteButton(${this.characterId})">X</button>
-                    </div>
-                
+            <div class="stats-header">
+                <div class="hp-row">
+                    <button class="hp-button" onclick="openModal('HP', 'hp', ${this.characterId})">HP: ${this.hp.current}</button>
+                    <button class="ac-button" onclick="openModal('AC', 'ac', ${this.characterId})">AC: ${this.ac}</button>
+                    <button class="erase-button" onclick="deleteButton(${this.characterId})">X</button>
                 </div>
-
+            </div>
             <div class="ability-grid">
                 ${Object.keys(this.stats).map(s => `
                     <button onclick="openModal('${s}', '${s}', ${this.characterId})">
@@ -127,7 +118,6 @@ class Character {
                     </button>
                 `).join('')}
             </div>
-
             <div class="actions-bar">
                 <button class="btn-add" onclick="openModal('Add Ability', 'ability', ${this.characterId})">Add Ability</button>
                 <button class="btn-add" onclick="openModal('Add Note', 'note', ${this.characterId})">Add Note</button>
@@ -138,8 +128,6 @@ class Character {
             </div>
 
             <div class="scroll-area">
-                
-
                 <!-- Wrap Notes in the same list-item class -->
                 ${this.notes.map(n => `
                     <div class="list-item note-item">
@@ -169,9 +157,12 @@ class Character {
     `;
     }
 } 
+
 class Encounter {
     constructor(fileToLoad = 'last_encounter_data'){
         this.loadFromLocalStorage(fileToLoad);
+        this.idPointer = 1;
+        this.turnPointer = 0;
     }
     loadFromLocalStorage(file) {
         try{
@@ -206,6 +197,7 @@ class Encounter {
                 this.characters = this.characters.filter(character => character.id === character.id);
             }
         });
+        this.render();
     }
     // Strictly saves
     save() {
@@ -234,15 +226,21 @@ class Encounter {
         const root = document.getElementById('tracker-view');
         this.clearWindow();
         this.characters.forEach(character => {
-            const targetContainer = `character-${character.id}`;
-            root.innerHTML += `
-                <div id="character-${character.id}">  </div>
-            `;
+            const targetContainer = `#character-${character.characterId}`;
+            let test = root.querySelector(targetContainer);
+            if(!test){
+                root.innerHTML += `
+                    <div id="character-${character.characterId}">  </div>
+                `;
+            }
             character.render(targetContainer);
         });
+        //save();
     }
 
     addCharacter(newCharacter){
+        newCharacter.changeID(this.idPointer);
+        this.idPointer++;
         if(this.characters){
             this.characters.push(newCharacter);
         } else {
@@ -251,27 +249,22 @@ class Encounter {
         this.render();
     }
 
-    //Character fields 
-    updateField(key, value) {
-        if(Number.isInteger(value)){
-            this[key] = (parseInt(value) || 0); //Handles ints for hp, stats, mods, and more
-        } else {
-            this[key] = value; //Handles strings, objects, and all others
-        }
-        this.save();
-    }
-    removeNote(note){
-        if(!note){return;}
-        this.notes = this.notes.filter(noteItem => noteItem !== note);
-        this.save();
+    removeCharacter(targetId){
+        this.characters = this.characters.filter(character => character.characterId !== targetId);
+        const target = document.getElementById(`character-${targetId}`); 
+        target.remove();
+        this.render();
     }
 
-    addNote(text) {
-        if (text.trim()) {
-            this.notes.push(text);
-            this.save();
-        }
+    nextTurn(){
+        turnPointer = (turnPointer + 1) % this.characters.length;
+        this.render();
+    } 
+
+    sortInitiative(){
+
     }
+
 }
 
 
@@ -454,6 +447,7 @@ function openModal(title, key, target="") {
     }else if (key === 'create') {
         newCharacter = new Character();
         activeEncounter.addCharacter(newCharacter);
+
         const targetCharacter = document.getElementById(`character-${newCharacter.characterId}`);
         targetCharacter.classList.add('hidden');
         createEditGroup.classList.remove('hidden');
@@ -483,6 +477,7 @@ function openModal(title, key, target="") {
         saveBtn.onclick = () => { 
             newChar = {
                 myname: nameInput.value,
+                characterId: newCharacter.characterId,
                 chaLvl: lvlInput.value,
                 hp: { max: hpInput.value, current: hpInput.value, tmp: 0 },
                 ac: acInput.value,
@@ -507,4 +502,8 @@ function openModal(title, key, target="") {
 
 function closeModal() {
     document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+function deleteButton(targetId){
+    activeEncounter.removeCharacter(targetId);
 }

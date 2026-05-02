@@ -406,11 +406,6 @@ document.querySelector(".btn-export-char")?.addEventListener("click", () => {
 //     render();
 // }); //For Testing
 
-
-
-
-
-
 // Adds toggle functionality
 const toggleButtons = document.querySelectorAll('.toggle-button');
 toggleButtons.forEach(toggle => {
